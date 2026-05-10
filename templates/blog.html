@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Security Blog — CyberNova Analytics{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Security Insights & Articles</h2>
+      <p>Expert articles on cybersecurity threats, trends, and best practices for Southern African organisations.</p>
+      <div class="underline"></div>
+    </div>
+    <div class="grid-2">
+      {% for p in posts %}
+      <div class="blog-card">
+        <div class="blog-card-body">
+          <div class="date">{{ p.created_at.strftime('%Y-%m-%d') }} &mdash; {{ p.author }}</div>
+          <h3>{{ p.title }}</h3>
+          <p>{{ p.content[:180] }}...</p>
+          <a href="{{ url_for('blog_post', pid=p.id) }}" class="btn btn-dark btn-sm">Read Full Article</a>
+        </div>
+      </div>
+      {% else %}
+      <p style="color:var(--muted)">No blog posts yet. Check back soon.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

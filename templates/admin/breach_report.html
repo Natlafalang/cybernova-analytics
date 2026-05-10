@@ -1,0 +1,72 @@
+{% extends "admin/base.html" %}
+{% block title %}Breach Report — CyberNova Admin{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Breach Report</h1>
+
+<div class="grid-2" style="margin-bottom:2rem">
+  <div style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06)">
+    <h3 style="color:var(--navy);margin-bottom:1rem;font-size:1rem">Monthly Incident Frequency</h3>
+    <canvas id="monthlyChart" height="200"></canvas>
+  </div>
+  <div style="background:#fff;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.06)">
+    <h3 style="color:var(--navy);margin-bottom:1rem;font-size:1rem">Incidents by Type</h3>
+    <canvas id="typeChart" height="200"></canvas>
+  </div>
+</div>
+
+<h3 style="color:var(--navy);margin-bottom:1rem;font-size:1.05rem">All Recorded Incidents ({{ incidents|length }} total)</h3>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Name</th><th>Organisation</th><th>Country</th><th>Issue Type</th><th>Description</th><th>Date</th></tr></thead>
+    <tbody>
+      {% for r in incidents %}
+      <tr>
+        <td style="color:var(--muted)">{{ r.id }}</td>
+        <td><strong>{{ r.full_name }}</strong></td>
+        <td>{{ r.organisation or '—' }}</td>
+        <td>{{ r.country or '—' }}</td>
+        <td><span class="badge badge-red">{{ r.issue_type or 'Unspecified' }}</span></td>
+        <td style="max-width:280px;font-size:.83rem">{{ r.description[:140] }}{% if r.description and r.description|length > 140 %}...{% endif %}</td>
+        <td style="white-space:nowrap;font-size:.83rem">{{ r.submitted_at.strftime('%Y-%m-%d %H:%M')}}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:2rem">No incidents recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<div style="margin-top:1.25rem">
+  <a href="{{ url_for('admin_ai_report') }}" class="btn btn-primary">Generate AI Incident Report</a>
+</div>
+
+<script>
+const months   = {{ monthly | map(attribute='month') | list | tojson }};
+const mCounts  = {{ monthly | map(attribute='cnt') | list | tojson }};
+const tLabels  = {{ type_cnt | map(attribute='issue_type') | list | tojson }};
+const tCounts  = {{ type_cnt | map(attribute='cnt') | list | tojson }};
+
+new Chart(document.getElementById('monthlyChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [{ label: 'Incidents', data: mCounts, fill: true,
+      borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,.1)',
+      tension: 0.4, pointBackgroundColor: '#00d4ff', pointRadius: 4 }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+new Chart(document.getElementById('typeChart'), {
+  type: 'bar',
+  data: {
+    labels: tLabels,
+    datasets: [{ label: 'Count', data: tCounts,
+      backgroundColor: ['#00d4ff','#1a3a6b','#00e676','#f4c542','#ff6b6b','#a78bfa','#fb923c','#34d399'],
+      borderRadius: 4 }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } },
+    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } },
+      x: { ticks: { font: { size: 10 } } } } }
+});
+</script>
+{% endblock %}

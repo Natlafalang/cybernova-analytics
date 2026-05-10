@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Gallery — CyberNova Analytics{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Training Events & Workshops</h2>
+      <p>A photo gallery of our cybersecurity training workshops, seminars, and community events across Southern Africa.</p>
+      <div class="underline"></div>
+    </div>
+    <div class="gallery-grid">
+      {% for item in items %}
+      <div class="gallery-item">
+        {% if item.image_url %}
+        <img src="{{ item.image_url }}" alt="{{ item.title }}" loading="lazy">
+        {% else %}
+        <div style="height:200px;background:var(--light-bg);display:flex;align-items:center;justify-content:center;color:var(--muted)">No Image</div>
+        {% endif %}
+        <div class="gallery-item-body">
+          <h3>{{ item.title }}</h3>
+          {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+        </div>
+      </div>
+      {% else %}
+      <p style="color:var(--muted)">Gallery is currently empty.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

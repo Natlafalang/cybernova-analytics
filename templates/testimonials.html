@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Testimonials — CyberNova Analytics{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Client Testimonials</h2>
+      <p>Read what organisations across Southern Africa say about CyberNova's services.</p>
+      <div class="underline"></div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    <div class="grid-3" style="margin-bottom:3rem">
+      {% for t in testimonials %}
+      <div class="testimonial-card">
+        <div class="stars">{{ '★' * t.rating }}{{ '☆' * (5 - t.rating) }}</div>
+        <p>"{{ t.message }}"</p>
+        <div class="testimonial-meta">
+          <strong>{{ t.name }}</strong><br>
+          <span>{{ t.organisation }}</span><br>
+          <span style="font-size:.78rem">{{ t.created_at.strftime('%Y-%m-%d') }}</span>
+        </div>
+      </div>
+      {% else %}
+      <p style="color:var(--muted)">No testimonials yet. Be the first to share your experience.</p>
+      {% endfor %}
+    </div>
+
+    <!-- Submit form -->
+    <div class="section-title" style="margin-bottom:1.5rem">
+      <h2 style="font-size:1.5rem">Share Your Experience</h2>
+      <div class="underline"></div>
+    </div>
+    <div class="form-wrap">
+      <form method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" name="name" required placeholder="Full name">
+          </div>
+          <div class="form-group">
+            <label>Organisation</label>
+            <input type="text" name="organisation" placeholder="Company or agency">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Rating *</label>
+          <select name="rating" required>
+            <option value="5">★★★★★ Excellent (5)</option>
+            <option value="4">★★★★☆ Good (4)</option>
+            <option value="3">★★★☆☆ Average (3)</option>
+            <option value="2">★★☆☆☆ Poor (2)</option>
+            <option value="1">★☆☆☆☆ Very Poor (1)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Your Experience *</label>
+          <textarea name="message" rows="4" required placeholder="Tell others about your experience with CyberNova Analytics..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Testimonial</button>
+        <p style="margin-top:.75rem;color:var(--muted);font-size:.83rem">Testimonials are reviewed by our team before publication.</p>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

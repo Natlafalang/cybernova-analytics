@@ -1,0 +1,56 @@
+{% extends "admin/base.html" %}
+{% block title %}Security Requests — CyberNova Admin{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Security Requests</h1>
+<div class="filters">
+  <form method="GET" style="display:flex;gap:1rem;flex-wrap:wrap;align-items:flex-end;width:100%">
+    <div class="filter-group">
+      <label>Issue Type</label>
+      <select name="issue_type">
+        <option value="">All Types</option>
+        {% for it in issue_types %}
+        <option value="{{ it[0] }}" {{ 'selected' if filters.issue_type==it[0] }}>{{ it[0] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Country</label>
+      <input type="text" name="country" value="{{ filters.country }}" placeholder="e.g. Botswana">
+    </div>
+    <div class="filter-group">
+      <label>Date From</label>
+      <input type="date" name="date_from" value="{{ filters.date_from }}">
+    </div>
+    <div class="filter-group">
+      <label>Date To</label>
+      <input type="date" name="date_to" value="{{ filters.date_to }}">
+    </div>
+    <button type="submit" class="btn btn-dark btn-sm">Apply Filters</button>
+    <a href="{{ url_for('admin_requests') }}" class="btn btn-sm" style="background:#fff;border:1px solid var(--border)">Clear</a>
+  </form>
+</div>
+<p style="color:var(--muted);font-size:.85rem;margin-bottom:.75rem">{{ requests|length }} record{{ 's' if requests|length != 1 }} found</p>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Organisation</th><th>Country</th><th>Job Title</th><th>Issue Type</th><th>Description</th><th>Submitted</th></tr></thead>
+    <tbody>
+      {% for r in requests %}
+      <tr>
+        <td style="color:var(--muted)">{{ r.id }}</td>
+        <td><strong>{{ r.full_name }}</strong></td>
+        <td><a href="mailto:{{ r.email }}">{{ r.email }}</a></td>
+        <td>{{ r.phone or '—' }}</td>
+        <td>{{ r.organisation or '—' }}</td>
+        <td>{{ r.country or '—' }}</td>
+        <td>{{ r.job_title or '—' }}</td>
+        <td><span class="badge badge-blue">{{ r.issue_type or 'Unspecified' }}</span></td>
+        <td style="max-width:240px;font-size:.83rem">{{ r.description[:120] }}{% if r.description|length > 120 %}...{% endif %}</td>
+        <td style="white-space:nowrap;font-size:.83rem">{{ r.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem">No requests match the current filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

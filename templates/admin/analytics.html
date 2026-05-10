@@ -1,0 +1,144 @@
+{% extends "admin/base.html" %}
+{% block title %}Analytics — CyberNova Admin{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">Analytics Dashboard</h1>
+
+<div class="stat-cards" style="margin-bottom:2rem">
+  <div class="stat-card">
+    <div class="val">{{ total }}</div>
+    <div class="lbl">Total Requests</div>
+  </div>
+  <div class="stat-card" style="border-top-color:#00e676">
+    <div class="val">{{ type_data|length }}</div>
+    <div class="lbl">Unique Issue Types</div>
+  </div>
+  <div class="stat-card" style="border-top-color:#f4c542">
+    <div class="val">{{ country_data|length }}</div>
+    <div class="lbl">Countries Represented</div>
+  </div>
+  <div class="stat-card" style="border-top-color:#a78bfa">
+    <div class="val">{{ monthly|length }}</div>
+    <div class="lbl">Active Months</div>
+  </div>
+</div>
+
+<div class="grid-2" style="margin-bottom:2rem">
+  <div style="background:#112840;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.2);border:1px solid #1e3a5f;">
+    <h3 style="color:#00d4ff;margin-bottom:1rem;font-size:1rem">Most Requested Service Types</h3>
+    <canvas id="typeChart" height="240"></canvas>
+  </div>
+  <div style="background:#112840;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.2);border:1px solid #1e3a5f;">
+    <h3 style="color:#00d4ff;margin-bottom:1rem;font-size:1rem">Geographic Distribution of Clients</h3>
+    <canvas id="geoChart" height="240"></canvas>
+  </div>
+</div>
+
+<div style="background:#112840;border-radius:10px;padding:1.5rem;box-shadow:0 2px 10px rgba(0,0,0,.2);margin-bottom:2rem;border:1px solid #1e3a5f;">
+  <h3 style="color:#00d4ff;margin-bottom:1rem;font-size:1rem">Request Volume Over Time</h3>
+  <canvas id="timeChart" height="120"></canvas>
+</div>
+
+<div class="grid-2">
+  <div>
+    <h3 style="color:#fff;margin-bottom:.75rem;font-size:1rem">Issue Type Breakdown</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Issue Type</th><th>Count</th><th>Share</th></tr></thead>
+        <tbody>
+          {% for row in type_data %}
+          <tr>
+            <td>{{ row['issue_type'] or 'Unspecified' }}</td>
+            <td><strong style="color:#fff;">{{ row['cnt'] }}</strong></td>
+            <td>
+              {% if total > 0 %}
+              <div style="background:#1e3a5f;border-radius:3px;height:8px;width:120px;display:inline-block;vertical-align:middle">
+                <div style="background:var(--accent);height:100%;border-radius:3px;width:{{ ((row['cnt']/total)*100)|int }}%"></div>
+              </div>
+              {{ ((row['cnt']/total)*100)|round(1) }}%
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" style="text-align:center;color:#a8b2d8;padding:1rem">No data yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div>
+    <h3 style="color:#fff;margin-bottom:.75rem;font-size:1rem">Geographic Breakdown</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Country</th><th>Count</th><th>Share</th></tr></thead>
+        <tbody>
+          {% for row in country_data %}
+          <tr>
+            <td>{{ row['country'] or 'Unknown' }}</td>
+            <td><strong style="color:#fff;">{{ row['cnt'] }}</strong></td>
+            <td>
+              {% if total > 0 %}
+              <div style="background:#1e3a5f;border-radius:3px;height:8px;width:120px;display:inline-block;vertical-align:middle">
+                <div style="background:#1a3a6b;height:100%;border-radius:3px;width:{{ ((row['cnt']/total)*100)|int }}%"></div>
+              </div>
+              {{ ((row['cnt']/total)*100)|round(1) }}%
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="3" style="text-align:center;color:#a8b2d8;padding:1rem">No data yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const typeLabels = {{ type_data | map(attribute='issue_type') | list | tojson }};
+const typeVals   = {{ type_data | map(attribute='cnt') | list | tojson }};
+const geoLabels  = {{ country_data | map(attribute='country') | list | tojson }};
+const geoVals    = {{ country_data | map(attribute='cnt') | list | tojson }};
+const months     = {{ monthly | map(attribute='month') | list | tojson }};
+const mVals      = {{ monthly | map(attribute='cnt') | list | tojson }};
+const palette    = ['#00d4ff','#1a3a6b','#00e676','#f4c542','#ff6b6b','#a78bfa','#fb923c','#34d399','#60a5fa','#f472b6'];
+
+new Chart(document.getElementById('typeChart'), {
+  type: 'doughnut',
+  data: { labels: typeLabels, datasets: [{ data: typeVals, backgroundColor: palette, borderWidth: 2 }] },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 }, color: '#a8b2d8' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('geoChart'), {
+  type: 'bar',
+  data: { labels: geoLabels, datasets: [{ label: 'Requests', data: geoVals, backgroundColor: '#00d4ff', borderRadius: 4 }] },
+  options: {
+    responsive: true,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { beginAtZero: true, ticks: { stepSize: 1, color: '#a8b2d8' }, grid: { color: '#1e3a5f' } },
+      y: { ticks: { color: '#a8b2d8' }, grid: { color: '#1e3a5f' } }
+    }
+  }
+});
+
+new Chart(document.getElementById('timeChart'), {
+  type: 'line',
+  data: { labels: months, datasets: [{ label: 'Requests', data: mVals,
+    borderColor: '#00d4ff', backgroundColor: 'rgba(0,212,255,.1)', fill: true, tension: 0.4, pointRadius: 4 }] },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 1, color: '#a8b2d8' }, grid: { color: '#1e3a5f' } },
+      x: { ticks: { color: '#a8b2d8' }, grid: { color: '#1e3a5f' } }
+    }
+  }
+});
+</script>
+{% endblock %}

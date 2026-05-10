@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Contact Security Team — CyberNova Analytics{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="section-title">
+      <h2>Contact Security Team</h2>
+      <p>Submit your security concern below. No account required — all issues are captured immediately and treated equally.</p>
+      <div class="underline"></div>
+    </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}" style="max-width:780px;margin:0 auto 1.25rem">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+    <div class="form-wrap">
+      <form method="POST" action="{{ url_for('contact') }}">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" name="full_name" placeholder="e.g. Thabo Mokoena" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address *</label>
+            <input type="email" name="email" placeholder="you@organisation.com" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" name="phone" placeholder="+267 71 234 567">
+          </div>
+          <div class="form-group">
+            <label>Organisation Name</label>
+            <input type="text" name="organisation" placeholder="Your company or agency">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Country</label>
+            <select name="country">
+              <option value="">Select country...</option>
+              <option>Botswana</option><option>South Africa</option><option>Zimbabwe</option>
+              <option>Namibia</option><option>Lesotho</option><option>Eswatini</option>
+              <option>Zambia</option><option>Mozambique</option><option>Malawi</option>
+              <option>Tanzania</option><option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Job Title</label>
+            <input type="text" name="job_title" placeholder="e.g. IT Manager">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Type of Security Issue</label>
+          <select name="issue_type">
+            <option value="">Select issue type...</option>
+            <option>Ransomware Attack</option>
+            <option>Phishing / Social Engineering</option>
+            <option>Unauthorised Access / Intrusion</option>
+            <option>Data Breach</option>
+            <option>DDoS Attack</option>
+            <option>Malware / Virus</option>
+            <option>Insider Threat</option>
+            <option>Network Vulnerability</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Description of Problem *</label>
+          <textarea name="description" rows="5" placeholder="Please describe the security issue in as much detail as possible. Include when it was first noticed, what systems are affected, and any actions already taken..." required></textarea>
+        </div>
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary">Submit Security Request</button>
+          <span style="color:var(--muted);font-size:.85rem">* Required fields. Your submission is stored securely and immediately.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}

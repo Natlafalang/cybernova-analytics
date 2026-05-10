@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block title %}AI Report Generator — CyberNova Admin{% endblock %}
+{% block admin_content %}
+<h1 class="admin-page-title">AI Incident Report Generator</h1>
+
+<div style="background:#fff;border-radius:10px;padding:1.75rem;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:1.5rem;max-width:780px">
+  <p style="color:#444;margin-bottom:1.25rem;line-height:1.7">
+    Click <strong>Generate Report</strong> to produce a summarised incident report from all stored breach and request data.
+    The AI assistant analyses incident types, geographic distribution, frequency trends, and produces a structured summary
+    with key findings and recommendations.
+  </p>
+  <form method="POST">
+    <button type="submit" class="btn btn-primary">Generate AI Incident Report</button>
+    {% if report %}
+    <button type="button" onclick="copyReport()" class="btn btn-dark btn-sm" style="margin-left:.75rem">Copy to Clipboard</button>
+    {% endif %}
+  </form>
+</div>
+
+{% if report %}
+<div style="max-width:780px">
+  <h3 style="color:var(--navy);margin-bottom:.75rem;font-size:1rem">Generated Report</h3>
+  <div class="report-box" id="report-text">{{ report }}</div>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:.75rem">
+  </p>
+</div>
+{% else %}
+<div style="max-width:780px;background:var(--light-bg);border-radius:8px;padding:2rem;text-align:center;color:var(--muted)">
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:.75rem;opacity:.4"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.6a1 1 0 01.7.3l5.4 5.4a1 1 0 01.3.7V19a2 2 0 01-2 2z"/></svg>
+  <p>No report generated yet. Click the button above to create one.</p>
+</div>
+{% endif %}
+
+<script>
+function copyReport() {
+  const text = document.getElementById('report-text').innerText;
+  navigator.clipboard.writeText(text).then(() => alert('Report copied to clipboard.'));
+}
+</script>
+{% endblock %}

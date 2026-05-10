@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — CyberNova Analytics{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <a href="{{ url_for('blog') }}" style="color:var(--muted);font-size:.88rem">&larr; Back to Blog</a>
+    <div class="blog-post-content" style="margin-top:1.5rem">
+      <h1>{{ post.title }}</h1>
+      <div class="meta">Published {{ post.created_at.strftime('%Y-%m-%d') }} &mdash; {{ post.author }}</div>
+      {% for para in post.content.split('\n') %}
+        {% if para.strip() %}<p>{{ para }}</p>{% endif %}
+      {% endfor %}
+      <div style="margin-top:2rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+        <a href="{{ url_for('contact') }}" class="btn btn-primary">Report a Security Issue</a>
+        <a href="{{ url_for('chat') }}" class="btn btn-dark" style="margin-left:.75rem">Talk to AI Assistant</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
