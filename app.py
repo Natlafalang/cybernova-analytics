@@ -8,19 +8,22 @@ from flask import (Flask, render_template, request, redirect, url_for,
 app = Flask(__name__)
 app.secret_key = "cybernova_secret_key_2026"
 
-DB_CONFIG = {
-    "host":     os.environ.get("DB_HOST", "localhost"),
-    "port":     int(os.environ.get("DB_PORT", 5432)),
-    "dbname":   os.environ.get("DB_NAME", "cybernova"),
-    "user":     os.environ.get("DB_USER", "postgres"),
-    "password": os.environ.get("DB_PASSWORD", "Leojosh@2203")
-}
+DATABASE_URL = os.environ.get("DATABASE_URL", "")
 
-# ── DATABASE ───────────────────────────────────────────────────────────────────
+# DATABASE 
 def get_db():
     db = getattr(g, "_db", None)
     if db is None:
-        db = g._db = psycopg2.connect(**DB_CONFIG)
+        if DATABASE_URL:
+            db = g._db = psycopg2.connect(DATABASE_URL, sslmode='require')
+        else:
+            db = g._db = psycopg2.connect(
+                host="localhost",
+                port=5432,
+                dbname="cybernova",
+                user="postgres",
+                password="Leojosh@2203"
+            )
         db.autocommit = False
     return db
 
