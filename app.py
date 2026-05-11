@@ -9,11 +9,11 @@ app = Flask(__name__)
 app.secret_key = "cybernova_secret_key_2026"
 
 DB_CONFIG = {
-    "host":     "localhost",
-    "port":     5432,
-    "dbname":   "cybernova",
-    "user":     "postgres",
-    "password": "Leojosh@2203"
+    "host":     os.environ.get("DB_HOST", "localhost"),
+    "port":     int(os.environ.get("DB_PORT", 5432)),
+    "dbname":   os.environ.get("DB_NAME", "cybernova"),
+    "user":     os.environ.get("DB_USER", "postgres"),
+    "password": os.environ.get("DB_PASSWORD", "Leojosh@2203")
 }
 
 # ── DATABASE ───────────────────────────────────────────────────────────────────

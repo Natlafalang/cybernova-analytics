@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: cybernova-analytics
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DB_HOST
+        value: your-render-postgres-host
+      - key: DB_NAME
+        value: cybernova
+      - key: DB_USER
+        value: your-db-user
+      - key: DB_PASSWORD
+        sync: false
